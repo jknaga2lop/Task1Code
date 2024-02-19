@@ -8,15 +8,15 @@
 
 -- dynamic1
 {% set dynamic1_map = {
-    'Province': ' `store_province` ',
+    'Province': " `store_province` ",
     'Account Rep': ' h.`account_rep` ',
     'Brand': ' `product_brand` ',
-    'Store Location': ' h.store_storename ~ " | " ~ h.store_city ~ " | " ~ h.store_address ~ " | " ~ h.store_postal_code ',
+    'Store Location': " concat(h.store_storename, ' | ', h.store_city, ' | ', h.store_address, ' | ', h.store_postal_code)  ",
     'Store Name': ' h.`store_storename` ',
-    'SkuSize': ' concat(product_jid, " (", `product_size`, ")") '
+    'SkuSize': " concat(product_jid, ' (', `product_size`, ')')  "
 } %}
 
-{% set var_dynamic1 = dynamic1_map.get(filter_values('product_view_filter')[0], " concat(product_jid, ' (', `product_size`, ')') ") %}
+{% set var_dynamic1 = dynamic1_map.get(filter_values('product_view_filter')[0], " concat(product_jid, ' (', `product_size`, ')')") %}
 
 -- dynamic2
 {% set dynamic2_mappings = {
