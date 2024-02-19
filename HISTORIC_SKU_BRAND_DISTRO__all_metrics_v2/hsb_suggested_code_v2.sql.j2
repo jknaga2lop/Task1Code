@@ -72,13 +72,19 @@
 -- LEFT JOIN variables
 
 -- category_comp
-{% set var_category_comp_leftjoin = "LEFT JOIN dbt.tr1_product_mapping z on (CASE WHEN (h.product_jid LIKE 'zz_comp_%') THEN SUBSTRING(h.product_jid, 9) ELSE h.product_jid END) = z.jid" if ((filter_values('category_comp') != []) or (filter_values('category2_comp') != []) or (filter_values('size_comp') != []) or (filter_values('c.brand') != []) or (filter_values('SKUSize') != [])) else "  " %}
+{% set var_category_comp_leftjoin = ("LEFT JOIN dbt.tr1_product_mapping z on (CASE WHEN (h.product_jid LIKE 'zz_comp_%') THEN SUBSTRING(h.product_jid, 9) ELSE h.product_jid END) = z.jid" 
+                                    if ((filter_values('category_comp') != []) or (filter_values('category2_comp') != []) or (filter_values('size_comp') != []) or (filter_values('c.brand') != []) or (filter_values('SKUSize') != [])) 
+                                    else "  ") %}
 
 -- custom_category1
-{% set var_custom_category_leftjoin = " LEFT JOIN dbt.tr1_client_skus tcs ON tcs.prodsizes_id = h.store_matchid AND tcs.client_code = h.clientcode" if filter_values('custom_category1') != [] else "  " %}
+{% set var_custom_category_leftjoin = (" LEFT JOIN dbt.tr1_client_skus tcs ON tcs.prodsizes_id = h.store_matchid AND tcs.client_code = h.clientcode" 
+                                      if filter_values('custom_category1') != [] 
+                                      else "  ") %}
 
 -- custom_attribute1&2
-{% set var_custom_attribute_leftjoin = "  LEFT JOIN dbt.tr1_client_stores tcst ON tcst.address = h.store_address and h.clientcode = tcst.client_code_store  " if (filter_values('custom_attribute1') != [] or filter_values('custom_attribute2') != []) else "  " %}
+{% set var_custom_attribute_leftjoin = ("  LEFT JOIN dbt.tr1_client_stores tcst ON tcst.address = h.store_address and h.clientcode = tcst.client_code_store  " 
+                                       if (filter_values('custom_attribute1') != [] or filter_values('custom_attribute2') != []) 
+                                       else "  ") %}
 
 -- Metric aggregates
 
