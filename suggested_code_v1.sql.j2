@@ -37,18 +37,18 @@
 {% set var_is_competitor_no = "AND h.product_jid NOT LIKE 'zz_%' " if (filter_values('is_competitor')[0] == 'No') or (filter_values('is_competitor') == []) else "  " %}
 
 -- date_filter
-{% set var_date_filter = "AND (const_date >= CAST(" + filter_values('date_filter_start')[0] | string + " / 1000 AS DATE)
-                          AND const_date <= CAST(" + filter_values('date_filter_end')[0] | string + " / 1000 AS DATE))" 
-                          if filter_values('date_filter_start') and filter_values('date_filter_end') else "  " %}
+{% set var_date_filter = "AND (const_date >= CAST(" +  filter_values('date_filter_start') [0] | string + " / 1000 AS DATE)
+                         AND const_date <= CAST(" + filter_values('date_filter_end') [0] | string + "/ 1000 AS DATE)) "  
+                         if filter_values('date_filter_start') and filter_values('date_filter_end') else "  " %}
 
 -- category_comp
-{% set var_category_comp_filter = "AND category_comp IN ('" + "','".join(filter_values('category_comp')) + "')" if filter_values('category_comp') != [] else "" %}
+{% set var_category_comp_filter = "AND category_comp IN ( '" + "','".join(filter_values('category_comp')) + "')" if filter_values('category_comp') != [] else "  " %}
        
 -- category2_comp
-{% set var_category2_comp_filter = "AND category2_comp IN ('" + "','".join(filter_values('category2_comp')) + "')" if filter_values('category2_comp') != [] else "  " %}
+{% set var_category2_comp_filter = "AND category2_comp IN ( '" + "','".join(filter_values('category2_comp')) + "')" if filter_values('category2_comp') != [] else "  " %}
         
 -- size_comp
-{% set var_size_comp_filter = "AND size_comp IN ('" + "','".join(filter_values('size_comp')) + "')" if filter_values('size_comp') != [] else "  " %}
+{% set var_size_comp_filter = "AND size_comp IN ( '" + "','".join(filter_values('size_comp')) + "')" if filter_values('size_comp') != [] else "  " %}
         
 -- d.city 
 {% set var_d_city_filter = "AND store_city IN ('" + "','".join(filter_values('d.city')) + "')" if filter_values('d.city') != [] else "  " %}
@@ -63,7 +63,7 @@
 {% set var_account_rep_filter = "AND h.account_rep IN ('" + "','".join(filter_values('account_rep')) + "') " if filter_values('account_rep') != [] else "  " %}
 
 -- category
-{% set var_category1_filter = "AND h.product_category1 IN ('" +  "','".join(filter_values('c.category1')) + "')" if filter_values('c.category1') != [] else "  " %}
+{% set var_category1_filter = "AND h.product_category1 IN ('" +  "','".join(filter_values('c.category1'))   + "')" if filter_values('c.category1') != [] else "  " %}
 
 -- custom_category1
 {% set var_custom_category1_filter = "AND tcs.custom_category1 IN ('" + "','".join(filter_values('custom_category1')) + "') " if filter_values('custom_category1') != [] else "  " %}
@@ -86,13 +86,13 @@
 -- LEFT JOIN variables
 
 -- category_comp
-{% set var_category_comp_leftjoin = "LEFT JOIN dbt.tr1_product_mapping z on (CASE WHEN (h.product_jid LIKE 'zz_comp_%') THEN SUBSTRING(h.product_jid, 9) ELSE h.product_jid END) = z.jid" if filter_values('category_comp') or filter_values('category2_comp') or filter_values('size_comp') or filter_values('c.brand') or filter_values('SKUSize') else "  " %}
+{% set var_category_comp_leftjoin = "LEFT JOIN dbt.tr1_product_mapping z on (CASE WHEN (h.product_jid LIKE 'zz_comp_%') THEN SUBSTRING(h.product_jid, 9) ELSE h.product_jid END) = z.jid" if ((filter_values('category_comp') != []) or (filter_values('category2_comp') != []) or (filter_values('size_comp') != []) or (filter_values('c.brand') != []) or (filter_values('SKUSize') != [])) else "  " %}
 
 -- custom_category1
-{% set var_custom_category_leftjoin = " LEFT JOIN dbt.tr1_client_skus tcs ON tcs.prodsizes_id = h.store_matchid AND tcs.client_code = h.clientcode" if filter_values('custom_category1') else "  " %}
+{% set var_custom_category_leftjoin = " LEFT JOIN dbt.tr1_client_skus tcs ON tcs.prodsizes_id = h.store_matchid AND tcs.client_code = h.clientcode" if filter_values('custom_category1') != [] else "  " %}
 
 -- custom_attribute1&2
-{% set var_custom_attribute_leftjoin = "  LEFT JOIN dbt.tr1_client_stores tcst ON tcst.address = h.store_address and h.clientcode = tcst.client_code_store" if filter_values('custom_attribute1') or filter_values('custom_attribute2') else "  " %}
+{% set var_custom_attribute_leftjoin = "  LEFT JOIN dbt.tr1_client_stores tcst ON tcst.address = h.store_address and h.clientcode = tcst.client_code_store  " if (filter_values('custom_attribute1') != [] or filter_values('custom_attribute2') != []) else "  " %}
 
 -- Metric aggregates
 
@@ -103,7 +103,7 @@
     'Peak': 'MAX(a.storeid)'
 } %}
 
-{% set metric_aggregate_store = metric_aggregate_map.get(filter_values('metric_type')[0], '') %}
+{% set metric_aggregate_store = metric_aggregate_map.get(filter_values('metric_type')[0], '  ') %}
 
 
 -- Distro
@@ -119,19 +119,19 @@
 {% set metric_aggregate_store_vs_distro_map = {
     'Store': metric_aggregate_store,
     'Distro': metric_aggregate_distro,
-    '': metric_aggregate_distro  # Handle the case when filter_values('store_vs_distro') is an empty list
+    '': metric_aggregate_distro 
 } %}
 
 {% set metric_aggregate_store_vs_distro = metric_aggregate_store_vs_distro_map.get(filter_values('store_vs_distro')[0], "  ") %}
 
 -- is metric null
-{% set metric_type_is_null = "a.storeid, distro_points," if filter_values('metric_type') == [] else " " %}
+{% set metric_type_is_null = "a.storeid, distro_points," if filter_values('metric_type') == [] else "  " %}
 
 -- Store vs Distro
 {% set store_vs_distro_map = {
     'Store': "COUNT(DISTINCT(`a.storeid`))",
     'Distro': "COUNT(DISTINCT(distro_points))",
-    '': "COUNT(DISTINCT(distro_points))"  # Handle the case when filter_values('store_vs_distro') is an empty list
+    '': "COUNT(DISTINCT(distro_points))" 
 } %}
 
 {% set store_vs_distro = store_vs_distro_map.get(filter_values('store_vs_distro')[0], "  ") %}
