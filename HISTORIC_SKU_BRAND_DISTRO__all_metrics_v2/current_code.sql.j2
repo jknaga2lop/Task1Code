@@ -1,0 +1,369 @@
+{% set var_date_split = 'const_date' %}
+{%- if filter_values('date_options')[0] == 'Month' -%}
+    {% set var_date_split = 'DATEADD(MONTH, DATEDIFF(MONTH, DATE(0), `const_date`), DATE(0))' %}
+{%- elif filter_values('date_options')[0] == 'Week' -%}
+    {% set var_date_split = 'DATEADD(week, DATEDIFF(week, DATE(4), `const_date`), DATE(4))' %}
+{%- endif -%} 
+-- spacer
+
+-- dynamic1
+{% set var_dynamic1 = " concat(product_jid, ' (', `product_size`, ')')" %}
+{%- if filter_values('product_view_filter')[0] == 'Province' -%}
+{% set var_dynamic1 = " `store_province` " %}
+{%- elif filter_values('product_view_filter')[0] == 'Account Rep' -%}
+{% set var_dynamic1 = " h.`account_rep` " %}
+{%- elif filter_values('product_view_filter')[0] == 'Brand' -%}
+{% set var_dynamic1 = " `product_brand` " %}
+{%- elif filter_values('product_view_filter')[0] == 'Store Location' -%}
+{% set var_dynamic1 = " concat(h.store_storename, ' | ', h.store_city, ' | ', h.store_address, ' | ', h.store_postal_code)  " %}
+{%- elif filter_values('product_view_filter')[0] == 'Store Name' -%}
+{% set var_dynamic1 = " h.`store_storename` " %}
+{%- elif filter_values('product_view_filter')[0] == 'SkuSize' -%}
+{% set var_dynamic1 = " concat(product_jid, ' (', `product_size`, ')')  " %}
+ {%- endif -%}
+
+-- dynamic2
+{% set var_dynamic2 = " '' " %}
+{%- if filter_values('product_view_filter_2')[0] == 'Province' -%}
+{% set var_dynamic2 = " store_province " %}
+{%- elif filter_values('product_view_filter_2')[0] == 'Account Rep' -%}
+{% set var_dynamic2 = " h.`account_rep` " %}
+{%- elif filter_values('product_view_filter_2')[0] == 'Brand' -%}
+{% set var_dynamic2 = " `product_brand` " %}
+{%- elif filter_values('product_view_filter_2')[0] == 'Store Location' -%}
+{% set var_dynamic2 = " concat(h.store_storename, ' | ', h.store_city, ' | ', h.store_address, ' | ', h.store_postal_code)  " %}
+{%- elif filter_values('product_view_filter_2')[0] == 'Store Name' -%}
+{% set var_dynamic2 = " h.`store_storename` " %}
+{%- elif filter_values('product_view_filter_2')[0] == 'SkuSize' -%}
+{% set var_dynamic2 = " concat(product_jid, ' (', `product_size`, ')')  " %}
+ {%- endif -%}
+ 
+-- is_competitor_yes
+{% set var_is_competitor_yes = "  " %}
+{%- if filter_values('is_competitor')[0] == 'Yes' -%}
+{% set var_is_competitor_yes = "AND h.product_jid LIKE 'zz_%' " %}
+ {%- endif -%} 
+        
+-- is_competitor_no
+{% set var_is_competitor_no = "  " %}
+{%- if (filter_values('is_competitor')[0] == 'No') or  (filter_values('is_competitor') == []) -%}
+{% set var_is_competitor_no = "AND h.product_jid NOT LIKE 'zz_%' " %}
+{%- endif -%}
+
+-- date_filter
+{% set var_date_filter = "  " %}
+{%- if filter_values('date_filter_start') != [] -%} 
+    {%- if filter_values('date_filter_end') != [] -%} 
+    {% set var_date_filter = "AND (const_date >= CAST(" +  filter_values('date_filter_start') [0] | string + " / 1000 AS DATE)
+                              AND const_date <= CAST(" + filter_values('date_filter_end') [0] | string + "/ 1000 AS DATE)) " %}    
+    {%- endif -%} 
+{%- endif -%}
+
+-- category_comp
+{% set var_category_comp_filter = "  " %}
+{%- if filter_values('category_comp') != []  -%}
+{% set var_category_comp_filter = "AND category_comp IN ( '" + "','".join(filter_values('category_comp')) + "')" %}
+{%- endif -%} 
+        
+-- category2_comp
+{% set var_category2_comp_filter = "  " %}
+{%- if filter_values('category2_comp') != []  -%}
+{% set var_category2_comp_filter = "AND category2_comp IN ( '" + "','".join(filter_values('category2_comp')) + "')" %}
+{%- endif -%} 
+        
+-- size_comp
+{% set var_size_comp_filter = "  " %}
+{%- if filter_values('size_comp') != []  -%}
+{% set var_size_comp_filter = "AND size_comp IN ( '" + "','".join(filter_values('size_comp')) + "')" %}
+{%- endif -%} 
+        
+-- d.city 
+{% set var_d_city_filter = "  " %}
+{%- if filter_values('d.city') != []  -%}
+{% set var_d_city_filter = "AND store_city IN ('" + "','".join(filter_values('d.city')) + "')" %}
+{%- endif -%} 
+        
+-- d.storeid
+{% set var_d_storeid_filter = "  " %}
+{%- if filter_values('d.storeid') != []  -%}
+{% set var_d_storeid_filter = "AND store_storeid IN ('" + "','".join(filter_values('d.storeid')) + "') " %}
+{%- endif -%} 
+        
+-- d.province
+{% set var_d_province_filter = "  " %}
+{%- if filter_values('d.province') != []  -%}
+{% set var_d_province_filter = "AND store_province IN ('" + "','".join(filter_values('d.province')) + "') " %}
+{%- endif -%} 
+        
+-- account_rep
+{% set var_ccount_rep_filter = "  " %}
+{%- if filter_values('account_rep') != []  -%}
+{% set var_ccount_rep_filter = "AND h.account_rep IN ('" + "','".join(filter_values('account_rep')) + "') " %}
+{%- endif -%} 
+
+-- category
+{% set var_category1_filter = "  " %}
+{%- if filter_values('c.category1') != []  -%}
+{% set var_category1_filter = "AND h.product_category1 IN ('" +  "','".join(filter_values('c.category1'))   + "')" %}
+ {%- endif -%}
+
+ -- custom_category1
+{% set var_custom_category1_filter = "  " %}
+{%- if filter_values('custom_category1') != [] -%}
+{% set var_custom_category1_filter = "AND tcs.custom_category1 IN ('" + "','".join(filter_values('custom_category1')) + "') " %}
+{%- endif -%}
+        
+-- custom_attribute1
+{% set var_custom_attribute1_filter = "  " %}
+{%- if filter_values('custom_attribute1') != [] -%}
+{% set var_custom_attribute1_filter = "AND tcst.custom_attribute1 IN ('" + "','".join(filter_values('custom_attribute1')) + "') " %}
+{%- endif -%}
+		
+-- custom_attribute2
+{% set var_custom_attribute2_filter = "  " %}
+{%- if filter_values('custom_attribute2') != [] -%}
+{% set var_custom_attribute2_filter = "AND tcst.custom_attribute2 IN ('" + "','".join(filter_values('custom_attribute2')) + "')" %}
+{%- endif -%}
+		
+-- c.brand
+{% set var_c_brand_filter = "  " %}
+{%- if filter_values('c.brand') != []  -%}
+{% set var_c_brand_filter = "AND z.brand IN ('" + "','".join(filter_values('c.brand') | replace("'", "''")) | replace("'',''", "','") + "')" %}
+{%- endif -%} 
+		
+-- d.storename
+{% set var_d_storename_filter = "  " %}
+{%- if filter_values('d.storename') != []  -%}
+{% set var_d_storename_filter = "AND h.store_storename IN ('" + "','".join(filter_values('d.storename') | replace("'", "''")) | replace("'',''", "','") + "') " %}
+{%- endif -%}
+
+-- SKUSize
+{% set var_SKUSize_filter = "  " %}
+{%- if filter_values('SKUSize') != []  -%}
+{% set var_SKUSize_filter = "AND CONCAT(z.jid, ' (', z.size, ')' ) IN ('" + "','".join(filter_values('SKUSize')) | replace("'", "''") | replace("'',''", "','") + "')" %}
+{%- endif -%} 
+
+
+-- LEFT JOIN variables
+
+-- category_comp
+{% set var_category_comp_leftjoin = "  " %}
+{%- if ((filter_values('category_comp') != []) or (filter_values('category2_comp') != []) or (filter_values('size_comp') != []) or (filter_values('c.brand') != []) or (filter_values('SKUSize') != []))  -%}
+{% set var_category_comp_leftjoin = "LEFT JOIN dbt.tr1_product_mapping z on (CASE WHEN (h.product_jid LIKE 'zz_comp_%') THEN SUBSTRING(h.product_jid, 9) ELSE h.product_jid END) = z.jid" %}
+{%- endif -%} 
+
+-- custom_category1
+{% set var_custom_category_leftjoin = "  " %}
+{%- if filter_values('custom_category1') != [] -%}
+{% set var_custom_category_leftjoin = " LEFT JOIN dbt.tr1_client_skus tcs
+                                ON tcs.prodsizes_id = h.store_matchid AND tcs.client_code = h.clientcode" %}
+{%- endif -%}
+
+-- custom_attribute1&2
+{% set var_custom_attribute_leftjoin = "  " %}
+{%- if (filter_values('custom_attribute1') != [] or filter_values('custom_attribute2') != []) -%}
+{% set var_custom_attribute_leftjoin = "  LEFT JOIN dbt.tr1_client_stores tcst
+	                            ON tcst.address = h.store_address and h.clientcode = tcst.client_code_store  " %}
+{%- endif -%}
+
+
+  
+-- Metric aggregates
+
+-- Store
+{% set metric_aggregate_store = "  " %}
+{%- if filter_values('metric_type')[0] == 'Min' -%}
+{% set metric_aggregate_store = "MIN(a.storeid)" %} 
+{%- elif filter_values('metric_type')[0] == 'Average' -%}
+{% set metric_aggregate_store = "AVG(a.storeid)" %}
+{%- elif filter_values('metric_type')[0] == 'Peak' -%}
+{% set metric_aggregate_store = "MAX(a.storeid)" %}
+  {%- endif -%}
+
+-- Distro
+{% set metric_aggregate_distro = "  " %}
+{%- if filter_values('metric_type')[0] == 'Min' -%}
+{% set metric_aggregate_distro = "MIN(distro_points)" %} 
+{%- elif filter_values('metric_type')[0] == 'Average' -%}
+{% set metric_aggregate_distro = "AVG(distro_points)" %}
+{%- elif filter_values('metric_type')[0] == 'Peak' -%}
+{% set metric_aggregate_distro = "MAX(distro_points)" %}
+  {%- endif -%}
+    
+-- Store vs Distro
+{% set metric_aggregate_store_vs_distro = "  " %}
+{%- if filter_values('store_vs_distro')[0] == 'Store' -%}
+{% set metric_aggregate_store_vs_distro = metric_aggregate_store  %}
+{%- elif (filter_values('store_vs_distro')[0] == 'Distro') or (filter_values('store_vs_distro') == []) -%}
+{% set metric_aggregate_store_vs_distro =  metric_aggregate_distro  %}
+ {%- endif -%}
+
+-- is metric null
+{% set metric_type_is_null = "  " %}
+{%- if filter_values('metric_type') == [] -%}
+{% set metric_type_is_null = "a.storeid, distro_points," %}
+ {%- endif -%}
+
+-- Store vs Distro
+{% set store_vs_distro = "  " %}
+{%- if filter_values('store_vs_distro')[0] == 'Store' -%}
+{% set store_vs_distro = "COUNT(DISTINCT(`a.storeid`))" %}
+{%- elif (filter_values('store_vs_distro')[0] == 'Distro') or (filter_values('store_vs_distro') == []) -%}
+{% set store_vs_distro = "COUNT(DISTINCT(distro_points))" %} 
+ {%- endif -%}
+
+-- Metric Daily Filter (can't figure out how to properly concatenate this)
+{% set metric_daily_groupby = "  " %}
+{%- if (filter_values('metric_type')[0] == 'Peak') or (filter_values('metric_type')[0] == 'Average') or (filter_values('metric_type')[0] == 'Min') -%}
+{% set metric_daily_groupby = "
+        GROUP BY 
+        {{var_dynamic1}},
+        {{var_dynamic2}}, 
+        const_date,
+		clientcode" %}
+{%- elif (filter_values('metric_type') == []) or (filter_values('metric_type')[0] == 'Cumulative') -%}
+{% set metric_daily_groupby = "  " %}
+ {%- endif -%}
+
+
+-- Start of Query
+
+WITH client_filter AS (
+    SELECT DISTINCT(clientcode) clientcode
+    FROM stage.tr1_clientcode_mapping
+    WHERE username = '{{ current_username() }}'
+) 
+
+
+
+{%- if (filter_values('metric_type')[0] == 'Peak') or (filter_values('metric_type')[0] == 'Average') or (filter_values('metric_type')[0] == 'Min') -%}
+-- Situation 1: Metric Type is Peak / Average / Min
+,
+daily AS (
+    SELECT 
+        `const_date` `const_date`,
+        {{ var_date_split }} `aggregate_date`,
+        COUNT(DISTINCT(`store_id`)) `a.storeid`,
+        {{ var_dynamic1 }} `dynamic_column_1`,
+        COUNT(DISTINCT(CONCAT(product_jid, product_size, store_id))) distro_points,
+        {{ var_dynamic2 }} `dynamic_column_2`,
+	    h.clientcode clientcode
+    FROM dbt.tr1_prod_history2_distro h
+    INNER JOIN client_filter c
+        ON c.clientcode = h.clientcode
+
+    {{ var_category_comp_leftjoin }}
+    {{ var_custom_category_leftjoin }}
+    {{ var_custom_attribute_leftjoin }}
+
+    WHERE h.product_id != '' 
+
+        {{ var_is_competitor_yes }}
+        {{ var_is_competitor_no }}
+        {{var_date_filter}}
+        {{ var_category_comp_filter }}
+        {{ var_category2_comp_filter }}
+        {{ var_size_comp_filter }}
+        {{ var_d_city_filter}}
+        {{ var_d_storeid_filter }}
+        {{ var_d_province_filter }}
+        {{ var_ccount_rep_filter}}
+        {{ var_category1_filter }}
+
+        AND h.const_date > CAST('2023-01-01' AS date) 
+
+        {{ var_custom_category1_filter }}
+        {{ var_custom_attribute1_filter }}
+        {{ var_custom_attribute2_filter }}
+        {{ var_c_brand_filter }}
+        {{ var_d_storename_filter }}
+        {{ var_SKUSize_filter }}
+
+    GROUP BY
+        {{ var_dynamic1 }},
+        {{ var_dynamic2 }},
+        const_date,
+		clientcode
+    
+)
+
+SELECT
+    `aggregate_date`,
+    {{ metric_aggregate_store }} `store_count`,
+    {{ metric_aggregate_store_vs_distro }} `distro_points`,
+    `dynamic_column_1`,
+    `dynamic_column_2`,
+    clientcode
+FROM daily
+GROUP BY aggregate_date,
+    dynamic_column_1,
+    dynamic_column_2,
+    {{ metric_type_is_null }}
+	clientcode
+
+{%- endif -%}  
+
+
+
+{%- if (filter_values('metric_type') == []) or (filter_values('metric_type')[0] == 'Cumulative') -%}
+-- Situation 2: Metric Type is Null / Cumulative
+,
+daily AS (
+    SELECT 
+        `const_date` `const_date`,
+        {{ var_date_split }} `aggregate_date`,
+        `store_id` `a.storeid` ,
+        {{ var_dynamic1 }} `dynamic_column_1`,
+        CONCAT(product_jid, product_size, store_id) distro_points,
+        {{ var_dynamic2 }} `dynamic_column_2`,
+	    h.clientcode clientcode
+    FROM dbt.tr1_prod_history2_distro h
+    INNER JOIN client_filter c
+        ON c.clientcode = h.clientcode
+
+    {{ var_category_comp_leftjoin }}
+    {{ var_custom_category_leftjoin }}
+    {{ var_custom_attribute_leftjoin }}
+
+    WHERE h.product_id != '' 
+
+        {{ var_is_competitor_yes }}
+        {{ var_is_competitor_no }}
+        {{var_date_filter}}
+        {{ var_category_comp_filter }}
+        {{ var_category2_comp_filter }}
+        {{ var_size_comp_filter }}
+        {{ var_d_city_filter}}
+        {{ var_d_storeid_filter }}
+        {{ var_d_province_filter }}
+        {{ var_ccount_rep_filter}}
+        {{ var_category1_filter }}
+
+        AND h.const_date > CAST('2023-01-01' AS date) 
+
+        {{ var_custom_category1_filter }}
+        {{ var_custom_attribute1_filter }}
+        {{ var_custom_attribute2_filter }}
+        {{ var_c_brand_filter }}
+        {{ var_d_storename_filter }}
+        {{ var_SKUSize_filter }}
+
+    
+
+)
+
+SELECT
+    `aggregate_date`,
+    COUNT(DISTINCT(`a.storeid`)) `store_count`,
+    {{ store_vs_distro }} `distro_points`,
+    `dynamic_column_1`,
+    `dynamic_column_2`,
+	clientcode
+FROM daily
+GROUP BY aggregate_date,
+    dynamic_column_1,
+    dynamic_column_2,
+	clientcode
+{%- endif -%}
+
+-- end
