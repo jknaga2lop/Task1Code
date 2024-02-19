@@ -20,12 +20,12 @@
 
 -- dynamic2
 {% set dynamic2_mappings = {
-    'Province': 'store_province',
-    'Account Rep': 'h.`account_rep`',
-    'Brand': '`product_brand`',
-    'Store Location': "concat(h.store_storename, ' | ', h.store_city, ' | ', h.store_address, ' | ', h.store_postal_code)",
-    'Store Name': 'h.`store_storename`',
-    'SkuSize': "concat(product_jid, ' (', `product_size`, ')')"
+    'Province': " store_province ",
+    'Account Rep': " h.`account_rep` ",
+    'Brand': " `product_brand` ",
+    'Store Location': " concat(h.store_storename, ' | ', h.store_city, ' | ', h.store_address, ' | ', h.store_postal_code)  ",
+    'Store Name': " h.`store_storename` ",
+    'SkuSize': " concat(product_jid, ' (', `product_size`, ')')  "
 } %}
 
 {% set var_dynamic2 = dynamic2_mappings.get(filter_values('product_view_filter_2')[0], "''") %}
