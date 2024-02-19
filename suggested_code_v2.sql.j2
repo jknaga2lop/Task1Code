@@ -41,38 +41,24 @@
                          AND const_date <= CAST(" + filter_values('date_filter_end') [0] | string + "/ 1000 AS DATE)) "  
                          if filter_values('date_filter_start') and filter_values('date_filter_end') else "  " %}
 
--- category_comp
-{% set var_category_comp_filter = "AND category_comp IN ( '" + "','".join(filter_values('category_comp')) + "')" if filter_values('category_comp') != [] else "  " %}
-       
--- category2_comp
-{% set var_category2_comp_filter = "AND category2_comp IN ( '" + "','".join(filter_values('category2_comp')) + "')" if filter_values('category2_comp') != [] else "  " %}
-        
--- size_comp
-{% set var_size_comp_filter = "AND size_comp IN ( '" + "','".join(filter_values('size_comp')) + "')" if filter_values('size_comp') != [] else "  " %}
-        
--- d.city 
-{% set var_d_city_filter = "AND store_city IN ('" + "','".join(filter_values('d.city')) + "')" if filter_values('d.city') != [] else "  " %}
+{% set filter_mapping = {
+    'var_category_comp_filter': ('category_comp', 'category_comp'),
+    'var_category2_comp_filter': ('category2_comp', 'category2_comp'),
+    'var_size_comp_filter': ('size_comp', 'size_comp'),
+    'var_d_city_filter': ('store_city', 'd.city'),
+    'var_d_storeid_filter': ('store_storedid', 'd.storeid'),
+    'var_d_province_filter': ('store_province', 'd.province'),
+    'var_account_rep_filter': ('h.account_rep', 'account_rep'),
+    'var_category1_filter': ('h.product_category1', 'c.category1'),
+    'var_custom_category1_filter': ('tcs.custom_category1', 'custom_category1'),
+    'var_custom_attribute1_filter': ('tcst.custom_attribute1', 'custom_attribute1'),
+    'var_custom_attribute2_filter': ('tcst.custom_attribute2', 'custom_attribute2')
+}
+%}
 
--- d.storeid        
-{% set var_d_storeid_filter = "AND store_storeid IN ('" + "','".join(filter_values('d.storeid')) + "') " if filter_values('d.storeid') != [] else "  " %}
-
--- d.province
-{% set var_d_province_filter = "AND store_province IN ('" + "','".join(filter_values('d.province')) + "') " if filter_values('d.province') != [] else "  " %}
-
--- account_rep
-{% set var_account_rep_filter = "AND h.account_rep IN ('" + "','".join(filter_values('account_rep')) + "') " if filter_values('account_rep') != [] else "  " %}
-
--- category
-{% set var_category1_filter = "AND h.product_category1 IN ('" +  "','".join(filter_values('c.category1'))   + "')" if filter_values('c.category1') != [] else "  " %}
-
--- custom_category1
-{% set var_custom_category1_filter = "AND tcs.custom_category1 IN ('" + "','".join(filter_values('custom_category1')) + "') " if filter_values('custom_category1') != [] else "  " %}
-
--- custom_attribute1
-{% set var_custom_attribute1_filter = "AND tcst.custom_attribute1 IN ('" + "','".join(filter_values('custom_attribute1')) + "') " if filter_values('custom_attribute1') != [] else "  " %}
-
--- custom_attribute2
-{% set var_custom_attribute2_filter = "AND tcst.custom_attribute2 IN ('" + "','".join(filter_values('custom_attribute2')) + "')" if filter_values('custom_attribute2') != [] else "  " %}
+{% for key, values in filter_mapping.items() %}
+    {% set _ = filter_mapping.update({key: "AND " + values[0] + " IN ('" + "','".join(filter_values(values[1])) + "')" if filter_values(values[1]) != [] else ""}) %}
+{% endfor %}
 
 -- c.brand
 {% set var_c_brand_filter = "AND z.brand IN ('" + "','".join(filter_values('c.brand') | replace("'", "''")) | replace("'',''", "','") + "')" if filter_values('c.brand') != [] else "  " %}
@@ -195,20 +181,20 @@ daily AS (
         {{ var_is_competitor_yes }}
         {{ var_is_competitor_no }}
         {{var_date_filter}}
-        {{ var_category_comp_filter }}
-        {{ var_category2_comp_filter }}
-        {{ var_size_comp_filter }}
-        {{ var_d_city_filter}}
-        {{ var_d_storeid_filter }}
-        {{ var_d_province_filter }}
-        {{ var_account_rep_filter}}
-        {{ var_category1_filter }}
+        {{ filter_mapping['var_category_comp_filter'] }}
+        {{ filter_mapping['var_category2_comp_filter'] }}
+        {{ filter_mapping['var_size_comp_filter'] }}
+        {{ filter_mapping['var_d_city_filter']}}
+        {{ filter_mapping['var_d_storeid_filter'] }}
+        {{ filter_mapping['var_d_province_filter'] }}
+        {{ filter_mapping['var_account_rep_filter']}}
+        {{ filter_mapping['var_category1_filter'] }}
 
         AND h.const_date > CAST('2023-01-01' AS date) 
 
-        {{ var_custom_category1_filter }}
-        {{ var_custom_attribute1_filter }}
-        {{ var_custom_attribute2_filter }}
+        {{ filter_mapping['var_custom_category1_filter'] }}
+        {{ filter_mapping['var_custom_attribute1_filter'] }}
+        {{ filter_mapping['var_custom_attribute2_filter'] }}
         {{ var_c_brand_filter }}
         {{ var_d_storename_filter }}
         {{ var_SKUSize_filter }}
@@ -264,20 +250,20 @@ daily AS (
         {{ var_is_competitor_yes }}
         {{ var_is_competitor_no }}
         {{var_date_filter}}
-        {{ var_category_comp_filter }}
-        {{ var_category2_comp_filter }}
-        {{ var_size_comp_filter }}
-        {{ var_d_city_filter}}
-        {{ var_d_storeid_filter }}
-        {{ var_d_province_filter }}
-        {{ var_account_rep_filter}}
-        {{ var_category1_filter }}
+        {{ filter_mapping['var_category_comp_filter'] }}
+        {{ filter_mapping['var_category2_comp_filter'] }}
+        {{ filter_mapping['var_size_comp_filter'] }}
+        {{ filter_mapping['var_d_city_filter']}}
+        {{ filter_mapping['var_d_storeid_filter'] }}
+        {{ filter_mapping['var_d_province_filter'] }}
+        {{ filter_mapping['var_account_rep_filter']}}
+        {{ filter_mapping['var_category1_filter'] }}
 
         AND h.const_date > CAST('2023-01-01' AS date) 
 
-        {{ var_custom_category1_filter }}
-        {{ var_custom_attribute1_filter }}
-        {{ var_custom_attribute2_filter }}
+        {{ filter_mapping['var_custom_category1_filter'] }}
+        {{ filter_mapping['var_custom_attribute1_filter'] }}
+        {{ filter_mapping['var_custom_attribute2_filter'] }}
         {{ var_c_brand_filter }}
         {{ var_d_storename_filter }}
         {{ var_SKUSize_filter }}
