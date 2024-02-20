@@ -170,6 +170,8 @@ WITH client_filter AS (
     WHERE username = '{{ current_username() }}'
 ) 
 
+
+
 {%- if (filter_values('metric_type')[0] == 'Peak') or (filter_values('metric_type')[0] == 'Average') or (filter_values('metric_type')[0] == 'Min') -%}
 -- Situation 1: Metric Type is Peak / Average / Min
 ,

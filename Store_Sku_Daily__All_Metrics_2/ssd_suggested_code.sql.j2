@@ -8,6 +8,14 @@
                                     if ((filter_values('c.category1') != []) or (filter_values('category_comp') != []) or (filter_values('category2_comp') != []) or (filter_values('size_comp') != []) or (filter_values('c.brand') != []) or (filter_values('SKUSize') != []))
                                     else "  "%}
 
+
+{% set and_in_filter = {
+    "upper(tpm.category1)":"c.category1",
+    "tpm.category_comp":"category_comp",
+    "tpm.category2_comp":"category2_comp",
+    "":""
+} %}
+
 -- c.category1
 {% set var_c_category1_filter = "  " %}
 {%- if filter_values('c.category1') != []  -%}
