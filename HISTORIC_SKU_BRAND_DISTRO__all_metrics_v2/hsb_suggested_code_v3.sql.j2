@@ -62,10 +62,6 @@
 --list all the column_names in filter mapping whose filter_input needs to have their quotes controlled
 {% set quote_control = ['z.brand', 'h.store_storename', "CONCAT(z.jid, ' (', z.size, ')' )"] %}
 
-{% for key, values in filter_mapping.items() %}
-    {% set _ = filter_mapping.update({key: "AND " + values[0] + " IN ('" + "','".join(filter_values(values[1])) + "')" if filter_values(values[1]) != [] else ""}) %}
-{% endfor %}
-
 -- LEFT JOIN variables
 
 -- category_comp
@@ -122,29 +118,29 @@
 {% set store_vs_distro = "COUNT(DISTINCT(`a.storeid`))" %}
 {%- elif (filter_values('store_vs_distro')[0] == 'Distro') or (filter_values('store_vs_distro') == []) -%}
 {% set store_vs_distro = "COUNT(DISTINCT(distro_points))" %} 
- {%- endif -%}
+{%- endif -%}
 
 
 -- Metric Daily Filter (can't figure out how to properly concatenate this)
 {% set metric_daily_groupby_map = {
     'Peak': "
         GROUP BY 
-        {{var_dynamic1}},
-        {{var_dynamic2}}, 
-        const_date,
-        clientcode",
+            {{var_dynamic1}},
+            {{var_dynamic2}}, 
+            const_date,
+            clientcode",
     'Average': "
         GROUP BY 
-        {{var_dynamic1}},
-        {{var_dynamic2}}, 
-        const_date,
-        clientcode",
+            {{var_dynamic1}},
+            {{var_dynamic2}}, 
+            const_date,
+            clientcode",
     'Min': "
         GROUP BY 
-        {{var_dynamic1}},
-        {{var_dynamic2}}, 
-        const_date,
-        clientcode",
+            {{var_dynamic1}},
+            {{var_dynamic2}}, 
+            const_date,
+            clientcode",
     'Cumulative': "  "
 } %}
 

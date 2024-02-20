@@ -128,13 +128,12 @@
 {% set metric_type_is_null = "a.storeid, distro_points," if filter_values('metric_type') == [] else "  " %}
 
 -- Store vs Distro
-{% set store_vs_distro_map = {
-    'Store': "COUNT(DISTINCT(`a.storeid`))",
-    'Distro': "COUNT(DISTINCT(distro_points))",
-    '': "COUNT(DISTINCT(distro_points))" 
-} %}
-
-{% set store_vs_distro = store_vs_distro_map.get(filter_values('store_vs_distro')[0], "  ") %}
+{% set store_vs_distro = "  " %}
+{%- if filter_values('store_vs_distro')[0] == 'Store' -%}
+{% set store_vs_distro = "COUNT(DISTINCT(`a.storeid`))" %}
+{%- elif (filter_values('store_vs_distro')[0] == 'Distro') or (filter_values('store_vs_distro') == []) -%}
+{% set store_vs_distro = "COUNT(DISTINCT(distro_points))" %} 
+ {%- endif -%}
 
 
 -- Metric Daily Filter (can't figure out how to properly concatenate this)

@@ -8,102 +8,33 @@
                                     if ((filter_values('c.category1') != []) or (filter_values('category_comp') != []) or (filter_values('category2_comp') != []) or (filter_values('size_comp') != []) or (filter_values('c.brand') != []) or (filter_values('SKUSize') != []))
                                     else "  "%}
 
-
 {% set and_in_filter = {
-    "upper(tpm.category1)":"c.category1",
-    "tpm.category_comp":"category_comp",
-    "tpm.category2_comp":"category2_comp",
-    "":""
+        "var_c_cateogry1_filter": {'column': 'upper(tpm.category1)', 'filter': 'c.category1'}
+        "var_category_comp_filter": {'column': 'tpm.category_comp', 'filter': 'category_comp'}
+        "var_category2_comp_filter": {'column': 'tpm.category2_comp', 'filter': 'category2_comp'}
+        "var_size_comp_filter": {'column': 'tpm.size_comp', 'filter': 'size_comp'}
+        "var_custom_category1_filter": {'column': 'tcs.custom_category1', 'filter': 'custom_category1'}
+        "var_c_brand_filter": {'column': 'tpm.brand', 'filter': 'c.brand'}
+        "var_SKUSize_filter": {'column': "CONCAT(tpm.jid, ' (', tpm.size, ')' )", 'filter': 'SKUSize'}
+        "var_d_province_filter": {'column': 'p.province_avail', 'filter': 'd.province'}
+        "var_c_category1_filter2": {'column': 'upper(m.category1)', 'filter': 'c.category1'}
+        "var_category_comp_filter2": {'column': 'm.category_comp', 'filter': 'category_comp'}
+        "var_category2_comp_filter2": {'column': 'm.category2_comp', 'filter': 'category2_comp'}
+        "var_size_comp_filter2": {'column': 'm.size_comp', 'filter': 'size_comp'}
+        "var_c_brand_filter2": {'column': 'm.brand', 'filter': 'c.brand'}
+        "var_SKUSize_filter2": {'column': "CONCAT(m.jid, ' (', m.size, ')' )", 'filter': 'SKUSize'}
 } %}
 
--- c.category1
-{% set var_c_category1_filter = "  " %}
-{%- if filter_values('c.category1') != []  -%}
-{% set var_c_category1_filter = "AND upper(tpm.category1) IN ('" + "','".join(filter_values('c.category1')) + "') " %} 
-{%- endif -%}
-		
--- category_comp
-{% set var_category_comp_filter = "  " %}
-{%- if filter_values('category_comp') != []  -%}
-{% set var_category_comp_filter = "AND tpm.category_comp IN ('" + "','".join(filter_values('category_comp')) + "') " %} 
-{%- endif -%} 
-        
--- category2_comp
-{% set var_category2_comp_filter = "  " %}
-{%- if filter_values('category2_comp') != []  -%}
-{% set var_category2_comp_filter = "AND tpm.category2_comp IN ('" + "','".join(filter_values('category2_comp')) + "') " %}       
-{%- endif -%} 
+{% set quote_control = ["var_c_brand_filter", "var_SKUSize_filter", "var_c_brand_filter2", "var_SKUSize_filter2"] %}
 
--- size_comp
-{% set var_size_comp_filter = "  " %}
-{%- if filter_values('size_comp') != []  -%}
-{% set var_size_comp_filter = "AND tpm.size_comp IN ('" + "','".join(filter_values('size_comp')) + "') " %}       
-{%- endif -%} 
+{% set store_total_filtered_where = ["var_c_category1_filter", "var_category_comp_filter", "var_category2_comp_filter", "var_size_comp_filter", "var_c_brand_filter", "var_SKUSize_filter"] %}
 
--- custom_category1 
-{% set var_custom_category1_filter = "  " %}
-{%- if filter_values('custom_category1') != [] -%}
-{% set var_custom_category1_filter = "AND tcs.custom_category1 IN ('" + "','".join(filter_values('custom_category1')) + "')" %} 
-{%- endif -%}
-        
--- c.brand
-{% set var_c_brand_filter = "  " %}
-{%- if filter_values('c.brand') != []  -%}
-{% set var_c_brand_filter = "AND tpm.brand IN ('" + "','".join(filter_values('c.brand')) | replace("'", "''") + "') " %}
-{%- endif -%} 
-        
--- SKUSize
-{% set var_SKUSize_filter = "  " %}
-{%- if filter_values('SKUSize') != []  -%}
-{% set var_SKUSize_filter = "AND CONCAT(tpm.jid, ' (', tpm.size, ')' ) IN ('" + "','".join(filter_values('SKUSize')) | replace("'", "''") + "') " %}
-{%- endif -%}
+{% set all_total_where = ["var_d_province_filter", "var_c_category1_filter2", "var_category_comp_filter2", "var_category2_comp_filter2", "var_size_comp_filter2", "var_c_brand_filter2", "var_c_brand_filter2"] %}
 
+{% set daily_where = ["var_c_category1_filter", "var_category_comp_filter", "var_category2_comp_filter", "var_size_comp_filter", "var_custom_category1_filter", "var_c_brand_filter", "var_SKUSize_filter"] %}
 
-----
-
-
--- d.province
-{% set var_d_province_filter = "  " %}
-{%- if filter_values('d.province') != [] -%}
-{% set var_d_province_filter = "AND p.province_avail IN ('" + "','".join(filter_values('d.province')) + "')" %} 
-{%- endif -%} 
-       
--- c.category1-2
-{% set var_c_category1_filter2 = "  " %}
-{%- if filter_values('c.category1') != []  -%}
-{% set var_c_category1_filter2 = "AND upper(m.category1) IN ('" + "','".join(filter_values('c.category1')) + "') " %} 
-{%- endif -%}
-       
--- category_comp-2
-{% set var_category_comp_filter2 = "  " %}
-{%- if filter_values('category_comp') != []  -%}
-{% set var_category_comp_filter2 = "AND m.category_comp IN ('" + "','".join(filter_values('category_comp')) + "') " %} 
-{%- endif -%} 
-       
--- category2_comp-2
-{% set var_category2_comp_filter2 = "  " %}
-{%- if filter_values('category2_comp') != []  -%}
-{% set var_category2_comp_filter2 = "AND m.category2_comp IN ('" + "','".join(filter_values('category2_comp')) + "') " %} 
-{%- endif -%} 
-       
--- size_comp-2        
-{% set var_size_comp_filter2 = "  " %}
-{%- if filter_values('size_comp') != []  -%}
-{% set var_size_comp_filter2 = "AND m.size_comp IN ('" + "','".join(filter_values('size_comp')) + "') " %} 
-{%- endif -%}
-        
--- c.brand-2
-{% set var_c_brand_filter2 = "  " %}
-{%- if filter_values('c.brand') != []  -%}
-{% set var_c_brand_filter2 = "AND m.brand IN ('" + "','".join(filter_values('c.brand')) | replace("'", "''") + "') " %} 
-{%- endif -%} 
+{% set situation_2_where = ["var_c_category1_filter", "var_category_comp_filter", "var_category2_comp_filter", "var_size_comp_filter", "var_custom_category1_filter", "var_c_brand_filter", "var_SKUSize_filter"]%}
       
--- SKUSize-2
-{% set var_SKUSize_filter2 = "  " %}
-{%- if filter_values('SKUSize') != []  -%}
-{% set var_SKUSize_filter2 = "AND CONCAT(m.jid, ' (', m.size, ')' ) IN ('" + "','".join(filter_values('SKUSize')) | replace("'", "''") + "') " %} 
-{%- endif -%} 
-
 -- daily sit1
 
 -- c.category1_leftjoin
@@ -115,41 +46,24 @@
 -- custom_category1_leftjoin
 {% set var_custom_category1_leftjoin = "  "%}
 {%- if filter_values('custom_category1') != [] -%}
-{% set var_custom_category1_leftjoin = "LEFT JOIN dbt.tr1_client_skus tcs
-                         ON tcs.prodsizes_id = h.store_matchid AND tcs.client_code = h.clientcode" %}   
+{% set var_custom_category1_leftjoin = "LEFT JOIN dbt.tr1_client_skus tcs ON tcs.prodsizes_id = h.store_matchid AND tcs.client_code = h.clientcode" %}   
 {%- endif -%}
 
 
 -- Metric Aggregate
 
--- totalSkus
-{% set metric_aggregate_totalSkus = "  " %}
-{%- if filter_values('metric_type')[0] == 'Min' -%}
-{% set metric_aggregate_totalSkus = "MIN(totalSkus)" %} 
-{%- elif filter_values('metric_type')[0] == 'Average' -%}
-{% set metric_aggregate_totalSkus = "AVG(totalSkus)" %}
-{%- elif filter_values('metric_type')[0] == 'Peak' -%}
-{% set metric_aggregate_totalSkus = "MAX(totalSkus)" %}
-  {%- endif -%}
+{% set metric_type = filter_values('metric_type')[0] if filter_values('metric_type') else '' %}
 
--- totalCompetSkus
-{% set metric_aggregate_totalCompetSkus = "  " %}
-{%- if filter_values('metric_type')[0] == 'Min' -%}
-{% set metric_aggregate_totalCompetSkus = "MIN(totalCompetSkuss)" %} 
-{%- elif filter_values('metric_type')[0] == 'Average' -%}
-{% set metric_aggregate_totalCompetSkus = "AVG(totalCompetSkus)" %}
-{%- elif filter_values('metric_type')[0] == 'Peak' -%}
-{% set metric_aggregate_totalCompetSkus = "MAX(totalCompetSkus)" %}
-  {%- endif -%}
+{% set metric_aggregates = {
+    'Min': {'totalSkus': 'MIN(totalSkus)', 'totalCompetSkus': 'MIN(totalCompetSkuss)'},
+    'Average': {'totalSkus': 'AVG(totalSkus)', 'totalCompetSkus': 'AVG(totalCompetSkus)'},
+    'Peak': {'totalSkus': 'MAX(totalSkus)', 'totalCompetSkus': 'MAX(totalCompetSkus)'}
+} %}
 
--- is metric null
-{% set metric_type_is_null = "  " %}
-{%- if filter_values('metric_type') == [] -%}
-{% set metric_type_is_null = ",totalSkus,
-                              totalCompetSkus " %}
-{%- endif -%}
+{% set metric_aggregate_totalSkus = metric_aggregates[metric_type]['totalSkus'] if metric_type in metric_aggregates else '' %}
+{% set metric_aggregate_totalCompetSkus = metric_aggregates[metric_type]['totalCompetSkus'] if metric_type in metric_aggregates else '' %}
 
-
+{% set metric_type_is_null = ',totalSkus,totalCompetSkus' if not metric_type else '' %}
 
 -- Query
 
@@ -181,14 +95,18 @@ store_total_filtered AS (
     WHERE d.store_id IS NOT NULL
         AND store_matchid IS NOT NULL
         AND store_matchid != ''
-    	
-        {{ var_date_filter }}
-        {{var_c_category1_filter}}
-        {{var_category_comp_filter}}
-        {{var_category2_comp_filter}}
-        {{var_size_comp_filter}}
-        {{var_c_brand_filter}}
-        {{var_SKUSize_filter}}
+    	{{ var_date_filter }}
+        {% for var, value in and_in_filter.items() %}
+            {% set filtered_values = filter_values(value['filter']) %}
+            {% if var in store_total_filtered_where and filtered_values %}
+                {% set column = value['column'] %}
+                {% if column not in quote_control %}
+                    AND {{ column }} IN ('{{ filtered_values|join("','") }}')
+                {% elif value[category] in quote_control %}
+                    AND {{ column }} IN ('{{ filtered_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
+                {% endif %}
+            {% endif %}
+        {% endfor %}
 
         AND const_date >= CAST('2023-01-01' AS DATE)
     GROUP BY store_id
@@ -207,13 +125,17 @@ all_total AS (
         AND c.clientcode != ''
         AND c.clientcode IS NOT NULL
     	AND c.client_type != 'inactive'
-        {{var_d_province_filter}}
-        {{var_c_category1_filter2}}
-        {{var_category_comp_filter2}}
-        {{var_category2_comp_filter2}}
-        {{var_size_comp_filter2}}
-        {{var_c_brand_filter2}}
-        {{var_c_brand_filter2}}
+        {% for var, value in and_in_filter.items() %}
+            {% set filtered_values = filter_values(value['filter']) %}
+            {% if var in all_total_where and filtered_values %}
+                {% set column = value['column'] %}
+                {% if column not in quote_control %}
+                    AND {{ column }} IN ('{{ filtered_values|join("','") }}')
+                {% elif value[category] in quote_control %}
+                    AND {{ column }} IN ('{{ filtered_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
+                {% endif %}
+            {% endif %}
+        {% endfor %}
     GROUP BY c.clientcode
 )
 
@@ -248,18 +170,18 @@ daily AS (
     WHERE
         store_storeid != '' 
         AND product_id != '' 
-        
-        {{ var_date_filter }}
-        {{var_c_category1_filter}}
-        {{var_category_comp_filter}}
-        {{var_category2_comp_filter}}
-        {{var_size_comp_filter}}
-        
+        {% for var, value in and_in_filter.items() %}
+            {% set filtered_values = filter_values(value['filter']) %}
+            {% if var in daily_where and filtered_values %}
+                {% set column = value['column'] %}
+                {% if column not in quote_control %}
+                    AND {{ column }} IN ('{{ filtered_values|join("','") }}')
+                {% elif value[category] in quote_control %}
+                    AND {{ column }} IN ('{{ filtered_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
+                {% endif %}
+            {% endif %}
+        {% endfor %}
         AND const_date >= CAST('2023-01-01' AS DATE) 
-
-        {{var_custom_category1_filter}}
-        {{var_c_brand_filter}}
-        {{var_SKUSize_filter}}
 
     GROUP BY
         const_date,
@@ -358,19 +280,18 @@ GROUP BY
     WHERE
         store_storeid != '' 
         AND product_id != '' 
-        
-        {{ var_date_filter }}
-        {{var_c_category1_filter}}
-        {{var_category_comp_filter}}
-        {{var_category2_comp_filter}}
-        {{var_size_comp_filter}}
-        
-        AND const_date >= CAST('2023-01-01' AS DATE) 
-
-        {{var_custom_category1_filter}}
-        {{var_c_brand_filter}}
-        {{var_SKUSize_filter}}
-        
+        {% for var, value in and_in_filter.items() %}
+            {% set filtered_values = filter_values(value['filter']) %}
+            {% if var in situation_2_where and filtered_values %}
+                {% set column = value['column'] %}
+                {% if column not in quote_control %}
+                    AND {{ column }} IN ('{{ filtered_values|join("','") }}')
+                {% elif value[category] in quote_control %}
+                    AND {{ column }} IN ('{{ filtered_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        AND const_date >= CAST('2023-01-01' AS DATE)         
 
     GROUP BY
         store_city,
