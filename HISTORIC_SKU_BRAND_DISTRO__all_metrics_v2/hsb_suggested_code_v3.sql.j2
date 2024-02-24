@@ -194,7 +194,8 @@ daily AS (
         {{ var_dynamic1 }},
         {{ var_dynamic2 }},
         const_date,
-		clientcode
+		clientcode,
+        distro_points
     
 )
 
@@ -210,7 +211,8 @@ GROUP BY aggregate_date,
     dynamic_column_1,
     dynamic_column_2,
     {{ metric_type_is_null }}
-	clientcode
+	clientcode,
+    distro_points
 
 {%- endif -%}  
 
@@ -265,7 +267,8 @@ FROM daily
 GROUP BY aggregate_date,
     dynamic_column_1,
     dynamic_column_2,
-	clientcode
+	clientcode,
+    distro_points
 {%- endif -%}
 
 -- end

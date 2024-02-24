@@ -1,7 +1,11 @@
 -- date_filter
-{% set var_date_filter = "AND (const_date >= CAST(" +  filter_values('date_filter_start') [0] | string + " / 1000 AS DATE)
-                         AND const_date <= CAST(" + filter_values('date_filter_end') [0] | string + "/ 1000 AS DATE)) "
-                         if (filter_values('date_filter_start') != []) and (filter_values('date_filter_end') != []) else "  "%}
+{% set var_date_filter = "  " %}
+{%- if filter_values('date_filter_start') != [] -%} 
+    {%- if filter_values('date_filter_end') != [] -%} 
+    {% set var_date_filter = "AND (const_date >= CAST(" +  filter_values('date_filter_start') [0] | string + " / 1000 AS DATE)
+                              AND const_date <= CAST(" + filter_values('date_filter_end') [0] | string + "/ 1000 AS DATE)) " %}    
+    {%- endif -%} 
+{%- endif -%}
 
 -- category_comp_leftjoin
 {% set var_category_comp_leftjoin = "LEFT JOIN dbt.tr1_product_mapping tpm ON tpm.id = trim(d.store_matchid)"
@@ -9,19 +13,19 @@
                                     else "  "%}
 
 {% set and_in_filter = {
-        "var_c_cateogry1_filter": {'column': 'upper(tpm.category1)', 'filter': 'c.category1'}
-        "var_category_comp_filter": {'column': 'tpm.category_comp', 'filter': 'category_comp'}
-        "var_category2_comp_filter": {'column': 'tpm.category2_comp', 'filter': 'category2_comp'}
-        "var_size_comp_filter": {'column': 'tpm.size_comp', 'filter': 'size_comp'}
-        "var_custom_category1_filter": {'column': 'tcs.custom_category1', 'filter': 'custom_category1'}
-        "var_c_brand_filter": {'column': 'tpm.brand', 'filter': 'c.brand'}
-        "var_SKUSize_filter": {'column': "CONCAT(tpm.jid, ' (', tpm.size, ')' )", 'filter': 'SKUSize'}
-        "var_d_province_filter": {'column': 'p.province_avail', 'filter': 'd.province'}
-        "var_c_category1_filter2": {'column': 'upper(m.category1)', 'filter': 'c.category1'}
-        "var_category_comp_filter2": {'column': 'm.category_comp', 'filter': 'category_comp'}
-        "var_category2_comp_filter2": {'column': 'm.category2_comp', 'filter': 'category2_comp'}
-        "var_size_comp_filter2": {'column': 'm.size_comp', 'filter': 'size_comp'}
-        "var_c_brand_filter2": {'column': 'm.brand', 'filter': 'c.brand'}
+        "var_c_cateogry1_filter": {'column': 'upper(tpm.category1)', 'filter': 'c.category1'},
+        "var_category_comp_filter": {'column': 'tpm.category_comp', 'filter': 'category_comp'},
+        "var_category2_comp_filter": {'column': 'tpm.category2_comp', 'filter': 'category2_comp'},
+        "var_size_comp_filter": {'column': 'tpm.size_comp', 'filter': 'size_comp'},
+        "var_custom_category1_filter": {'column': 'tcs.custom_category1', 'filter': 'custom_category1'},
+        "var_c_brand_filter": {'column': 'tpm.brand', 'filter': 'c.brand'},
+        "var_SKUSize_filter": {'column': "CONCAT(tpm.jid, ' (', tpm.size, ')' )", 'filter': 'SKUSize'},
+        "var_d_province_filter": {'column': 'p.province_avail', 'filter': 'd.province'},
+        "var_c_category1_filter2": {'column': 'upper(m.category1)', 'filter': 'c.category1'},
+        "var_category_comp_filter2": {'column': 'm.category_comp', 'filter': 'category_comp'},
+        "var_category2_comp_filter2": {'column': 'm.category2_comp', 'filter': 'category2_comp'},
+        "var_size_comp_filter2": {'column': 'm.size_comp', 'filter': 'size_comp'},
+        "var_c_brand_filter2": {'column': 'm.brand', 'filter': 'c.brand'},
         "var_SKUSize_filter2": {'column': "CONCAT(m.jid, ' (', m.size, ')' )", 'filter': 'SKUSize'}
 } %}
 
@@ -170,6 +174,7 @@ daily AS (
     WHERE
         store_storeid != '' 
         AND product_id != '' 
+        {{ var_date_filter }}
         {% for var, value in and_in_filter.items() %}
             {% set filtered_values = filter_values(value['filter']) %}
             {% if var in daily_where and filtered_values %}
@@ -280,6 +285,7 @@ GROUP BY
     WHERE
         store_storeid != '' 
         AND product_id != '' 
+        {{ var_date_filter }}
         {% for var, value in and_in_filter.items() %}
             {% set filtered_values = filter_values(value['filter']) %}
             {% if var in situation_2_where and filtered_values %}
