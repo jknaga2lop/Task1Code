@@ -100,14 +100,14 @@ store_total_filtered AS (
         AND store_matchid IS NOT NULL
         AND store_matchid != ''
     	{{ var_date_filter }}
-        {% for var, value in and_in_filter.items() %}
-            {% set filtered_values = filter_values(value['filter']) %}
-            {% if var in store_total_filtered_where and filtered_values %}
-                {% set column = value['column'] %}
-                {% if column not in quote_control %}
-                    AND {{ column }} IN ('{{ filtered_values|join("','") }}')
-                {% elif value[category] in quote_control %}
-                    AND {{ column }} IN ('{{ filtered_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
+        {% for var, category in and_in_filter.items() %}
+            {% set filter_values = filter_values(category['filter']) %}
+            {% set column = category['column'] %}
+            {% if filter_values != [] and var in store_total_filtered_where %}
+                {% if var not in quote_control %}
+                    AND {{ column }} IN ('{{ filter_values|join("','") }}')
+                {% elif var in quote_control %}
+                    AND {{ column }} IN ('{{ filter_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
                 {% endif %}
             {% endif %}
         {% endfor %}
@@ -129,14 +129,14 @@ all_total AS (
         AND c.clientcode != ''
         AND c.clientcode IS NOT NULL
     	AND c.client_type != 'inactive'
-        {% for var, value in and_in_filter.items() %}
-            {% set filtered_values = filter_values(value['filter']) %}
-            {% if var in all_total_where and filtered_values %}
-                {% set column = value['column'] %}
-                {% if column not in quote_control %}
-                    AND {{ column }} IN ('{{ filtered_values|join("','") }}')
-                {% elif value[category] in quote_control %}
-                    AND {{ column }} IN ('{{ filtered_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
+        {% for var, category in and_in_filter.items() %}
+            {% set filter_values = filter_values(category['filter']) %}
+            {% set column = category['column'] %}
+            {% if filter_values != [] and var in all_total_where %}
+                {% if var not in quote_control %}
+                    AND {{ column }} IN ('{{ filter_values|join("','") }}')
+                {% elif var in quote_control %}
+                    AND {{ column }} IN ('{{ filter_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
                 {% endif %}
             {% endif %}
         {% endfor %}
@@ -175,14 +175,14 @@ daily AS (
         store_storeid != '' 
         AND product_id != '' 
         {{ var_date_filter }}
-        {% for var, value in and_in_filter.items() %}
-            {% set filtered_values = filter_values(value['filter']) %}
-            {% if var in daily_where and filtered_values %}
-                {% set column = value['column'] %}
-                {% if column not in quote_control %}
-                    AND {{ column }} IN ('{{ filtered_values|join("','") }}')
-                {% elif value[category] in quote_control %}
-                    AND {{ column }} IN ('{{ filtered_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
+        {% for var, category in and_in_filter.items() %}
+            {% set filter_values = filter_values(category['filter']) %}
+            {% set column = category['column'] %}
+            {% if filter_values != [] and var in daily_where %}
+                {% if var not in quote_control %}
+                    AND {{ column }} IN ('{{ filter_values|join("','") }}')
+                {% elif var in quote_control %}
+                    AND {{ column }} IN ('{{ filter_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
                 {% endif %}
             {% endif %}
         {% endfor %}
@@ -286,14 +286,14 @@ GROUP BY
         store_storeid != '' 
         AND product_id != '' 
         {{ var_date_filter }}
-        {% for var, value in and_in_filter.items() %}
-            {% set filtered_values = filter_values(value['filter']) %}
-            {% if var in situation_2_where and filtered_values %}
-                {% set column = value['column'] %}
-                {% if column not in quote_control %}
-                    AND {{ column }} IN ('{{ filtered_values|join("','") }}')
-                {% elif value[category] in quote_control %}
-                    AND {{ column }} IN ('{{ filtered_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
+        {% for var, category in and_in_filter.items() %}
+            {% set filter_values = filter_values(category['filter']) %}
+            {% set column = category['column'] %}
+            {% if filter_values != [] and var in situation_2_where %}
+                {% if var not in quote_control %}
+                    AND {{ column }} IN ('{{ filter_values|join("','") }}')
+                {% elif var in quote_control %}
+                    AND {{ column }} IN ('{{ filter_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
                 {% endif %}
             {% endif %}
         {% endfor %}
