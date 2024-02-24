@@ -59,7 +59,7 @@
 {% set metric_type = filter_values('metric_type')[0] if filter_values('metric_type') else '' %}
 
 {% set metric_aggregates = {
-    'Min': {'totalSkus': 'MIN(totalSkus)', 'totalCompetSkus': 'MIN(totalCompetSkuss)'},
+    'Min': {'totalSkus': 'MIN(totalSkus)', 'totalCompetSkus': 'MIN(totalCompetSkus)'},
     'Average': {'totalSkus': 'AVG(totalSkus)', 'totalCompetSkus': 'AVG(totalCompetSkus)'},
     'Peak': {'totalSkus': 'MAX(totalSkus)', 'totalCompetSkus': 'MAX(totalCompetSkus)'}
 } %}

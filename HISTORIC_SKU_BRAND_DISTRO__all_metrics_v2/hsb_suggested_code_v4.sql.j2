@@ -180,11 +180,12 @@ daily AS (
         {{ var_is_competitor_no }}
         {{var_date_filter}}
         {% for column, category in filter_mapping.items() %}
-            {% if filter_values(category) != [] %}
+            {% set filter_values = filter_values(category) %}
+            {% if filter_values != [] %}
                 {% if column not in quote_control %}
-                    AND {{ column }} IN ('{{ filter_values(category)|join("','") }}')
+                    AND {{ column }} IN ('{{ filter_values|join("','") }}')
                 {% elif column in quote_control %}
-                    AND {{ column }} IN ('{{ filter_values(category)|join("','")|replace("'", "''")|replace("'',''", "','") }}')
+                    AND {{ column }} IN ('{{ filter_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
                 {% endif %}
             {% endif %}
         {% endfor %}
@@ -242,11 +243,12 @@ daily AS (
         {{ var_is_competitor_no }}
         {{var_date_filter}}
         {% for column, category in filter_mapping.items() %}
-            {% if filter_values(category) != [] %}
+            {% set filter_values = filter_values(category) %}
+            {% if filter_values != [] %}
                 {% if column not in quote_control %}
-                    AND {{ column }} IN ('{{ filter_values(category)|join("','") }}')
+                    AND {{ column }} IN ('{{ filter_values|join("','") }}')
                 {% elif column in quote_control %}
-                    AND {{ column }} IN ('{{ filter_values(category)|join("','")|replace("'", "''")|replace("'',''", "','") }}')
+                    AND {{ column }} IN ('{{ filter_values|join("','")|replace("'", "''")|replace("'',''", "','") }}')
                 {% endif %}
             {% endif %}
         {% endfor %}
